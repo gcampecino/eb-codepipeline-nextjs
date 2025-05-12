@@ -39,7 +39,7 @@ jobs:
           docker stop $(docker ps -a -q) || true 
           docker pull gcampecino/squire-test:latest
           docker run -d -p 80:80 gcampecino/squire-test:latest
-
+    #
     # - name: Install SSH Key
     #   uses: webfactory/ssh-agent@v0.5.3
     #   with:
