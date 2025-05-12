@@ -23,7 +23,7 @@ jobs:
       run: docker build -t squire-test:latest .
 
     - name: Push Docker image to Docker Hub
-      run: docker push gcampecino/squire-test:latest
+      run: docker push docker.io/gcampecino/squire-test:latest
 
     - name: Deploy to ec2 squire test server
       uses: appleboy/ssh-action@master
