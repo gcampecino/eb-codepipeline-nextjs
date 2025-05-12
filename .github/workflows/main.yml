@@ -26,19 +26,27 @@ jobs:
       run: docker push gcampecino/squire-test:latest
 
     - name: Deploy to ec2 squire test server
-      uses: appleboy/ssh-action@master
+      uses: bitovi/github-actions-deploy-docker-to-ec2@v1.0.1
       with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USERNAME }}
-        key: ${{ secrets.EC2_PRIVATE_KEY }}
-        port: 22
-        command_timeout: 200m
-        script: |
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-          docker stop $(docker ps -a -q) || true 
-          docker pull gcampecino/squire-test:latest
-          docker run -d -p 80:80 gcampecino/squire-test:latest
+        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws_default_region: us-east-1
+
+        aws_elb_app_port: 8080 # This should match the docker exposed port. Defaults to 3000.
+    # - name: Deploy to ec2 squire test server
+    #   uses: appleboy/ssh-action@master
+    #   with:
+    #     host: ${{ secrets.EC2_HOST }}
+    #     username: ${{ secrets.EC2_USERNAME }}
+    #     key: ${{ secrets.EC2_PRIVATE_KEY }}
+    #     port: 22
+    #     command_timeout: 200m
+    #     script: |
+    #       export NVM_DIR="$HOME/.nvm"
+    #       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    #       docker stop $(docker ps -a -q) || true 
+    #       docker pull gcampecino/squire-test:latest
+    #       docker run -d -p 80:80 gcampecino/squire-test:latest
     #
     # - name: Install SSH Key
     #   uses: webfactory/ssh-agent@v0.5.3
