@@ -35,6 +35,4 @@ jobs:
           docker stop $(docker ps -a -q) || true 
           docker pull gcampecino/squire-test:latest
           docker run -d -p 80:80 gcampecino/squire-test:latest
-        EOF
-
-    
+          
