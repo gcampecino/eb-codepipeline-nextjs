@@ -67,14 +67,14 @@ jobs:
     #   run: |
     #     ssh -o StrictHostKeyChecking=no -i squire-test.pem ubuntu@172.31.17.31 'sudo docker run -d --name squire-test -p 80:80 gcampecino/squire-test:latest'
 
-    - name: Deploy Docker image to EC2
-      run: |
-        ssh -tt -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} <<  'EOF'
-
-    # - name: Deploy Docker image to EC2v2
+    # - name: Deploy Docker image to EC2
     #   run: |
     #     ssh -tt -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} <<  'EOF'
-    #     docker pull gcampecino/squire-test:latest
-    #     docker stop $(docker ps -a -q) || true
-    #     docker run -d -p 80:80 gcampecino/squire-test:latest
+
+    - name: Deploy Docker image to EC2v2
+      run: |
+        ssh -tt -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} <<  'EOF'
+        sudo docker pull gcampecino/squire-test:latest
+        sudo docker stop $(docker ps -a -q) || true
+        sudo docker run -d -p 80:80 gcampecino/squire-test:latest
         
