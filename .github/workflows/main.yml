@@ -25,14 +25,14 @@ jobs:
     - name: Push Docker image to Docker Hub
       run: docker push gcampecino/squire-test:latest
 
-    - name: Deploy to ec2 squire test server
-      uses: bitovi/github-actions-deploy-docker-to-ec2@v1.0.1
-      with:
-        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws_default_region: us-east-1
+    # - name: Deploy to ec2 squire test server
+    #   uses: bitovi/github-actions-deploy-docker-to-ec2@v1.0.1
+    #   with:
+    #     aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws_default_region: us-east-1
 
-        aws_elb_app_port: 8080 # This should match the docker exposed port. Defaults to 3000.
+    #     aws_elb_app_port: 8080 # This should match the docker exposed port. Defaults to 3000.
     # - name: Deploy to ec2 squire test server
     #   uses: appleboy/ssh-action@master
     #   with:
@@ -48,10 +48,24 @@ jobs:
     #       docker pull gcampecino/squire-test:latest
     #       docker run -d -p 80:80 gcampecino/squire-test:latest
     #
-    # - name: Install SSH Key
-    #   uses: webfactory/ssh-agent@v0.5.3
-    #   with:
-    #     ssh-private-key: ${{ secrets.EC2_PRIVATE_KEY }}
+    - name: Install SSH Key
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.EC2_PRIVATE_KEY }}
+
+    - name: Set permissions for private key
+      run: |
+        chmod 600 squire-test.pem
+    - name: Pull Docker image
+      run: |
+        ssh -o StrictHostKeyChecking=no -i squire-test.pem ubuntu@172.31.17.31 'sudo docker pull gcampecino/squire-test:latest'
+    - name: Stop running container
+      run: |
+        ssh -o StrictHostKeyChecking=no -i squire-test.pem ubuntu@172.31.17.31 'sudo docker stop squire-test || true'
+        ssh -o StrictHostKeyChecking=no -i squire-test.pem ubuntu@172.31.17.31 'sudo docker rm squire-test || true'
+    - name: Run new container
+      run: |
+        ssh -o StrictHostKeyChecking=no -i squire-test.pem ubuntu@172.31.17.31 'sudo docker run -d --name squire-test -p 80:80 gcampecino/squire-test:latest'
 
     # - name: Deploy Docker image to EC2
     #   run: |
