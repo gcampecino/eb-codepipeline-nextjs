@@ -33,25 +33,23 @@ jobs:
     #     aws_default_region: us-east-1
 
     #     aws_elb_app_port: 8080 # This should match the docker exposed port. Defaults to 3000.
-    # - name: Deploy to ec2 squire test server
-    #   uses: appleboy/ssh-action@master
-    #   with:
-    #     host: ${{ secrets.EC2_HOST }}
-    #     username: ${{ secrets.EC2_USERNAME }}
-    #     key: ${{ secrets.EC2_PRIVATE_KEY }}
-    #     port: 22
-    #     command_timeout: 200m
-    #     script: |
-    #       export NVM_DIR="$HOME/.nvm"
-    #       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    #       docker stop $(docker ps -a -q) || true 
-    #       docker pull gcampecino/squire-test:latest
-    #       docker run -d -p 80:80 gcampecino/squire-test:latest
-    #
-    - name: Install SSH Key
-      uses: webfactory/ssh-agent@v0.5.3
+    - name: Deploy to ec2 squire test server
+      uses: appleboy/ssh-action@master
       with:
-        ssh-private-key: ${{ secrets.EC2_PRIVATE_KEY }}
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_PRIVATE_KEY }}
+        port: 22
+        command_timeout: 200m
+        script: |
+          sudo docker stop $(docker ps -a -q) || true 
+          sudo docker pull gcampecino/squire-test:latest
+          sudo docker run -d -p 80:80 gcampecino/squire-test:latest
+    #
+    # - name: Install SSH Key
+    #   uses: webfactory/ssh-agent@v0.5.3
+    #   with:
+    #     ssh-private-key: ${{ secrets.EC2_PRIVATE_KEY }}
 
     # - name: Set permissions for private key
     #   run: |
@@ -71,10 +69,10 @@ jobs:
     #   run: |
     #     ssh -tt -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} <<  'EOF'
 
-    - name: Deploy Docker image to EC2v2
-      run: |
-        ssh -tt -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} <<  'EOF'
-        sudo docker pull gcampecino/squire-test:latest
-        sudo docker stop $(docker ps -a -q) || true
-        sudo docker run -d -p 80:80 gcampecino/squire-test:latest
+    # - name: Deploy Docker image to EC2v2
+    #   run: |
+    #     ssh -tt -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} <<  'EOF'
+    #     sudo docker pull gcampecino/squire-test:latest
+    #     sudo docker stop $(docker ps -a -q) || true
+    #     sudo docker run -d -p 80:80 gcampecino/squire-test:latest
         
